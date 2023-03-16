@@ -2,6 +2,7 @@
 
 import { Exception } from '@adonisjs/core/build/standalone'
 import Database from '@ioc:Adonis/Lucid/Database'
+import { v4 as uuid } from 'uuid'
 
 export default class ProductsController {
   public async index() {
@@ -18,5 +19,17 @@ export default class ProductsController {
       })
     if (!product) throw new Exception('Not Found', 404)
     return product
+  }
+
+  public async store({ request }) {
+    const body = request.body()
+    const id = uuid()
+    if (!body.name || !body.price) {
+      throw new Exception('Bad Request', 400)
+    }
+
+    return Database.table('products.products')
+      .insert({ id, ...body })
+      .returning(['id', 'name', 'price', 'created_at'])
   }
 }
