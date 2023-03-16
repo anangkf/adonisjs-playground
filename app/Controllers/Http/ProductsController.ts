@@ -32,4 +32,16 @@ export default class ProductsController {
       .insert({ id, ...body })
       .returning(['id', 'name', 'price', 'created_at'])
   }
+
+  public async destroy({ request }) {
+    const { id } = request.params()
+
+    return Database.from('products.products')
+      .where('id', id)
+      .delete()
+      .returning(['id', 'name', 'price', 'created_at'])
+      .catch(() => {
+        throw new Exception('Invalid ID', 400)
+      })
+  }
 }
