@@ -44,4 +44,20 @@ export default class ProductsController {
         throw new Exception('Invalid ID', 400)
       })
   }
+
+  public async update({ request }) {
+    const { id } = request.params()
+    const body = request.body()
+    const product = await Database.from('products.products')
+      .where('id', id)
+      .catch(() => {
+        throw new Exception('Invalid ID', 400)
+      })
+
+    if (!product.length) throw new Exception('Not Found', 404)
+    return Database.from('products.products')
+      .where('id', id)
+      .update(body)
+      .returning(['id', 'name', 'price', 'created_at'])
+  }
 }
